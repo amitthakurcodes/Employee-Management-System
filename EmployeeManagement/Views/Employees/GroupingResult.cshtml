@@ -1,0 +1,60 @@
+﻿@model IEnumerable<GroupData<Employee>>
+@{
+    ViewData["Title"] = "GroupingResult";
+}
+
+<div class="form-page-header mb-4 text-center">
+    <h1 class="page-title mb-1">
+        <i class="bi bi-diagram-3-fill text-warning me-2"></i>Grouping Result
+    </h1>
+    <p class="text-muted mb-0">Employees grouped and organized below.</p>
+</div>
+
+<div class="row justify-content-center mb-3">
+    <div class="col-auto">
+        <a asp-action="Grouping" class="ems-btn-outline">
+            <i class="bi bi-arrow-left"></i> Back to Grouping
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        @foreach (var g in Model)
+        {
+            <div class="group-card mb-4">
+                <div class="group-card-header">
+                    <i class="bi bi-folder2-open"></i>
+                    @g.Key
+                    <span class="group-count-badge">@g.Persons.Count() employee(s)</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table attendance-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Gender</th>
+                                <th>Salary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in g.Persons)
+                            {
+                                <tr>
+                                    <td>@d.EmployeeName</td>
+                                    <td>
+                                        <span class="badge-gender @(d.Gender.ToString() == "Male" ? "badge-male" : "badge-female")">
+                                            <i class="bi @(d.Gender.ToString() == "Male" ? "bi-gender-male" : "bi-gender-female")"></i>
+                                            @d.Gender
+                                        </span>
+                                    </td>
+                                    <td class="text-success fw-bold">₹@d.Salary?.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

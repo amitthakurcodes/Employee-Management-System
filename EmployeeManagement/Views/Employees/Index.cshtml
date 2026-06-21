@@ -1,0 +1,147 @@
+﻿@model IEnumerable<EmployeeManagement.Models.Employee>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title mb-0">
+        <i class="bi bi-people-fill text-primary me-2"></i>Employee List
+    </h1>
+    <a asp-action="Create" asp-controller="Employees" class="ems-btn ems-btn-blue">
+        <i class="bi bi-plus-lg"></i> Create New
+    </a>
+</div>
+
+<div class="row g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col-12">
+            <div class="employee-card">
+                <div class="row g-0 align-items-center p-3">
+
+                    <div class="col-auto">
+                        <img src="~/Pictures/@item.Picture" class="emp-img" onerror="this.src='/Pictures/no-image.png'" />
+                    </div>
+
+                    <div class="col">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <div class="emp-field-label">Name</div>
+                                <div class="emp-field-value">@Html.DisplayFor(modelItem => item.EmployeeName)</div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="emp-field-label">Gender</div>
+                                <div class="emp-field-value">
+                                     <span class="badge-gender @(item.Gender.ToString() == "Male" ? "badge-male" : "badge-female")">
+                                             <i class="bi @(item.Gender.ToString() == "Male" ? "bi-gender-male" : "bi-gender-female")"></i>
+                                             @item.Gender
+                                     </span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="emp-field-label">Joining Date</div>
+                                <div class="emp-field-value">@(item.JoiningDate?.ToString("dd MMM yyyy"))</div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="emp-field-label">Salary</div>
+                                <div class="emp-field-value text-success fw-bold">₹@(item.Salary?.ToString("N2"))</div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="emp-field-label">Status</div>
+                                <div class="emp-field-value">
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge-status badge-active">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status badge-inactive">Inactive</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <a asp-action="Edit" asp-controller="Employees" asp-route-id="@item.EmployeeId" class="btn-icon btn-icon-edit" title="Edit">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <button type="button" class="btn-icon btn-icon-delete del" data-pk="@item.EmployeeId" title="Delete">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (item.Attendances != null && item.Attendances.Any())
+                {
+                    <div class="attendance-section">
+                        <button class="attendance-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#att-@item.EmployeeId">
+                            <i class="bi bi-calendar-check"></i>
+                            Attendances (@item.Attendances.Count())
+                            <i class="bi bi-chevron-down toggle-arrow"></i>
+                        </button>
+                        <div class="collapse" id="att-@item.EmployeeId">
+                            <div class="table-responsive mt-2">
+                                <table class="table attendance-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>In Time</th>
+                                            <th>Out Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var a in item.Attendances)
+                                        {
+                                            <tr>
+                                                <td>@a.AttendanceDate?.ToString("dd MMM yyyy")</td>
+                                                <td><i class="bi bi-box-arrow-in-right text-success"></i> @a.InTime</td>
+                                                <td><i class="bi bi-box-arrow-left text-danger"></i> @a.OutTime</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-people display-1 text-muted"></i>
+        <p class="text-muted mt-3">No employees found. Click "Create New" to add one.</p>
+    </div>
+}
+
+@section scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(() => {
+            $('.del').click(function () {
+                let eid = $(this).data('pk');
+                let card = $(this).closest('.col-12');
+                if (confirm("are you sure to delete?\nEmployee with its all Attendances will be deleted.")) {
+                    $.ajax({
+                        type: 'post',
+                        url: '/Employees/Delete/' + eid,
+                        dataType: 'json',
+                        success: r => {
+                            if (r.success && r.success == true) {
+                                card.fadeOut(200, function () { $(this).remove(); });
+                            }
+                        }
+                    })
+                }
+            });
+
+            $('.attendance-toggle').click(function () {
+                $(this).find('.toggle-arrow').toggleClass('rotated');
+            });
+        });
+    </script>
+}

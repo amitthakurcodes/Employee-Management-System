@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Grouping";
+}
+
+<div class="form-page-header mb-4 text-center">
+    <h1 class="page-title mb-1">
+        <i class="bi bi-diagram-3-fill text-warning me-2"></i>Grouping
+    </h1>
+    <p class="text-muted mb-0">Choose how you'd like to group employee data.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <form asp-controller="Employees" asp-action="Grouping" method="post">
+            <div class="grouping-options-row">
+                <button class="grouping-option-btn" type="submit" name="groupby" value="gender">
+                    <div class="grouping-icon grouping-icon-blue">
+                        <i class="bi bi-gender-ambiguous"></i>
+                    </div>
+                    <div class="grouping-option-title">Group by Gender</div>
+                    <div class="grouping-option-sub">Split employees male / female</div>
+                </button>
+
+                <button class="grouping-option-btn" type="submit" name="groupby" value="year-month">
+                    <div class="grouping-icon grouping-icon-amber">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <div class="grouping-option-title">Group by Joining Date</div>
+                    <div class="grouping-option-sub">Split employees by year / month</div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
